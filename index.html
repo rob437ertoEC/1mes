@@ -95,7 +95,7 @@
     /* ===== Citas: “pantallita” vertical automática ===== */
     .dates-viewport{
       position:relative;
-      height: 360px;            /* se ven ~3 tarjetas */
+      height: 360px;
       overflow:hidden;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.08);
@@ -155,7 +155,6 @@
       user-select:none;
     }
 
-    /* ✅ Imagen dentro de la cita */
     .date-img{
       width:100%;
       height:140px;
@@ -170,6 +169,60 @@
     .paused-hint{
       font-size:12px; color:rgba(255,255,255,.45);
       margin-top:8px;
+    }
+
+    /* ===== REELS ===== */
+    .reels-grid{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (max-width: 700px){
+      .reels-grid{ grid-template-columns: 1fr; }
+    }
+    .reel-card{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.05);
+      overflow:hidden;
+      transition: transform .08s ease, background .15s ease;
+    }
+    .reel-card:hover{ transform: translateY(-1px); background:rgba(255,255,255,.06); }
+    .reel-thumb{
+      width:100%;
+      height:160px;
+      object-fit:cover;
+      display:block;
+      background:rgba(255,255,255,.04);
+    }
+    .reel-body{ padding:10px 12px 12px; }
+    .reel-title{
+      margin:0 0 6px;
+      font-weight:750;
+      color:rgba(255,255,255,.88);
+      font-size:14px;
+    }
+    .reel-note{
+      margin:0;
+      font-size:13px;
+      color:rgba(255,255,255,.65);
+      line-height:1.35;
+    }
+    .reel-link{
+      text-decoration:none;
+      color:inherit;
+      display:block;
+    }
+
+    /* ===== Spotify embed ===== */
+    .spotify-embed{
+      width:100%;
+      height:152px;
+      border:0;
+      border-radius:14px;
+      overflow:hidden;
+      background:rgba(255,255,255,.04);
     }
   </style>
 </head>
@@ -206,23 +259,16 @@
             Estamos cerca de cumplir 1 mes ya como algo más que amigos y quería darte un pequeño detalle, aunque estemos a distancia. Por eso hice esta página: cada día habrá un mensaje para ti y una canción nueva que espero te guste.
 Ya te lo he dicho muchas veces, pero te lo vuelvo a decir: me gustas por cómo eres, por cómo te expresas y por cómo piensas. Me emociona seguir creando recuerdos contigo y poder compartir más momentos a tu lado.
 Mientras llega el día de verte, que esta página sea como un puente: un pedacito de mí contigo todos los días. Y recuerda: si necesitas hablar, aquí voy a estar.<br/>
-            <span style="color:rgba(255, 255, 255, 0.842)">Por mas tiempo creando bonitos recuerdos .</span> 
+            <span style="color:rgba(255, 255, 255, 0.842)">Por mas tiempo creando bonitos recuerdos .</span>
           </p>
 
           <div class="divider"></div>
 
-          <h3 style="margin:0 0 8px">Abrir cuando me extrañes</h3>
-          <p class="small">Esto es romántico, no “seguro” (si la página es pública, el código se puede ver).</p>
-          <input id="code" placeholder="Escribe el apodo secreto..." />
-          <button class="btn" id="secretBtn" onclick="openSecret()">Abrir ✨</button>
+          <!-- ✅ Reels -->
+          <h3 style="margin:0 0 8px">Reels que me recuerdan a ti ✨</h3>
+          <div id="reelsGrid" class="reels-grid"></div>
 
-          <div id="secret" style="display:none; margin-top:12px" class="card">
-            <h3 style="margin:0 0 8px">Para ti 💞</h3>
-            <p style="margin:0">
-              Te extraño. Y aun así, me encanta que existas en mi vida.<br/>
-              Cuando nos veamos, nuestra primera cita será: <strong id="plan">[TU PLAN AQUÍ]</strong>.
-            </p>
-          </div>
+          <span id="plan" style="display:none;"></span>
         </div>
 
         <!-- Derecha -->
@@ -234,25 +280,26 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
             <div id="datesList" class="dates-list"></div>
           </div>
 
-          <div class="paused-hint">
-            
-          </div>
+          <div class="paused-hint"></div>
 
+          <!-- ✅ Playlist de Spotify (embed + botón) -->
           <div class="divider"></div>
+          <h3 style="margin:0 0 8px">Playlist en Spotify 💚</h3>
+          <p class="small" style="margin-top:0">Para cuando quieras escuchar nuestras canciones en Spotify.</p>
 
-          <h2 style="margin:0 0 8px">Canción del día 🎶</h2>
-          <p class="small" style="margin-top:0">
-            Cambia por día. Archivos: <b>music/day15.mp3</b> ... <b>music/day30.mp3</b>
-          </p>
-
-          <audio id="bgMusic" preload="auto" loop></audio>
+          <iframe id="spotifyEmbed" class="spotify-embed" style="display:none;"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"></iframe>
 
           <div class="actions" style="margin-top:10px">
-            <button class="btn" style="max-width:220px" id="musicPlay">Reproducir</button>
-            <button class="btn" style="max-width:220px" id="musicPause">Pausar</button>
+            <a id="spotifyOpen" class="btn" href="#"
+               target="_blank" rel="noopener noreferrer"
+               style="max-width:220px; text-decoration:none; display:inline-block; text-align:center;">
+              Abrir playlist 🎧
+            </a>
           </div>
 
-          <p class="small" id="musicLabel" style="margin-top:10px; opacity:.85"></p>
+          <p class="small" id="spotifyHint" style="margin-top:10px; opacity:.85"></p>
         </div>
       </div>
     </section>
@@ -305,7 +352,8 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
       unlockFromDay: 17,
       secretCode: "gatita",
       plan: "cena + caminar + muchas fotos",
-      totalDays: 30
+      totalDays: 30,
+      spotifyPlaylistUrl: "https://open.spotify.com/playlist/1fitpxZ8XcjZIXAjIGuFPA?si=Ri-9lx-eT5Cbl8VJoru0ng"
     };
 
     const messages = Array.from({length: CONFIG.totalDays}, (_, i) => `Día ${i+1}: escribe aquí algo bonito 💖`);
@@ -323,11 +371,9 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     messages[27] = "Día 28: Hoy te recuerdo algo simple: me importas y mucho";
     messages[28] = "Día 29: Eres de esas personas que hacen el mundo más bonito sin intentarlo.";
     messages[29] = "Día 30: Hoy cumplimos un mes, y solo quiero decirte esto: me haces sentir muy bien, y me encanta que seas tú";
-    
 
     const msPerDay = 24*60*60*1000;
     const stripTime = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    const clamp = (x,a,b) => Math.max(a, Math.min(b,x));
 
     function showModal(title, body){
       document.getElementById("modalTitle").textContent = title;
@@ -335,6 +381,69 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
       document.getElementById("modal").style.display = "flex";
     }
     function closeModal(){ document.getElementById("modal").style.display = "none"; }
+
+    // =========================
+    // REELS ✅
+    // =========================
+    const reels = [
+      { title:"Reel 1 ✨", note:"", url:"https://www.instagram.com/reel/DFS8hQHOTUP/?igsh=MXFlMmRuNHRjNmczaA==", img:"reels/reel1.jpg" },
+      { title:"Reel 2 🫶", note:"", url:"https://www.instagram.com/reel/DQuIFH5EfIY/?igsh=MWRsZnU1bGRscTl2eA==", img:"reels/reel2.jpg" },
+      { title:"Reel 3 🌙", note:"", url:"https://www.instagram.com/p/DRcaJHMjSp4/?igsh=MTZtYnJqMGZpc2Q0", img:"reels/reel3.jpg" },
+      { title:"Reel 4 🌷", note:"", url:"https://www.instagram.com/reel/DRlLbXLjgYv/?igsh=NTdocjZsOTZzajVp", img:"reels/reel4.jpg" }
+    ];
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function reelPlaceholderSVG(label){
+      return `
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700">
+          <defs>
+            <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0" stop-color="rgba(255,93,162,0.28)"/>
+              <stop offset="1" stop-color="rgba(124,92,255,0.22)"/>
+            </linearGradient>
+          </defs>
+          <rect width="1200" height="700" fill="rgba(255,255,255,0.04)"/>
+          <rect width="1200" height="700" fill="url(#g)"/>
+          <text x="60" y="120" fill="rgba(255,255,255,0.92)" font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="62" font-weight="800">
+            ${label}
+          </text>
+          <text x="60" y="200" fill="rgba(255,255,255,0.70)" font-family="system-ui, -apple-system, Segoe UI, Roboto" font-size="34">
+            Reels para ti
+          </text>
+        </svg>
+      `;
+    }
+
+    function renderReels(){
+      const grid = document.getElementById("reelsGrid");
+      if(!grid) return;
+
+      grid.innerHTML = reels.map(r => {
+        const imgSrc = r.img
+          ? r.img
+          : `data:image/svg+xml,${encodeURIComponent(reelPlaceholderSVG(r.title))}`;
+
+        return `
+          <div class="reel-card">
+            <a class="reel-link" href="${r.url}" target="_blank" rel="noopener noreferrer">
+              <img class="reel-thumb" src="${imgSrc}" alt="${escapeHtml(r.title)}" loading="lazy">
+              <div class="reel-body">
+                <div class="reel-title">${escapeHtml(r.title)}</div>
+                <p class="reel-note">${escapeHtml(r.note)}</p>
+              </div>
+            </a>
+          </div>
+        `;
+      }).join("");
+    }
 
     // =========================
     // Citas con imágenes ✅
@@ -426,7 +535,9 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     document.getElementById("herName").textContent = CONFIG.herName;
     document.getElementById("cities").textContent = CONFIG.cities;
     document.getElementById("startLabel").textContent = CONFIG.startDate;
-    document.getElementById("plan").textContent = CONFIG.plan;
+
+    const planEl = document.getElementById("plan");
+    if (planEl) planEl.textContent = CONFIG.plan;
 
     const rawDayIndex = Math.floor((stripTime(today) - stripTime(start)) / msPerDay) + 1;
     document.getElementById("rawDay").textContent = Math.max(rawDayIndex, 0);
@@ -445,19 +556,6 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
       lockText.textContent = `Se desbloquea el ${unlockDate.toLocaleDateString("es-MX")} (faltan ${daysLeft} día(s)).`;
     } else {
       lockGate.style.display = "none";
-    }
-
-    function openSecret(){
-      if (!gateUnlocked) {
-        showModal("Todavía no 🙈", "Esto se desbloquea a partir del día 15.");
-        return;
-      }
-      const code = (document.getElementById("code").value || "").trim().toLowerCase();
-      const secret = document.getElementById("secret");
-      secret.style.display = (code === CONFIG.secretCode.toLowerCase()) ? "block" : "none";
-      if(code !== CONFIG.secretCode.toLowerCase()){
-        showModal("Ups 🙈", "Esa no es la clave. Pista: el apodo que uso contigo.");
-      }
     }
 
     // =========================
@@ -488,34 +586,62 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     }
 
     // =========================
-    // Música por día
+    // Spotify embed + botón ✅
     // =========================
-    (() => {
-      const audio = document.getElementById("bgMusic");
-      const playBtn = document.getElementById("musicPlay");
-      const pauseBtn = document.getElementById("musicPause");
-      const label = document.getElementById("musicLabel");
-      if (!audio || !playBtn || !pauseBtn) return;
+    function toSpotifyEmbedUrl(url){
+      if(!url) return "";
+      let u = String(url).trim();
+      u = u.split("?")[0];
 
-      const dayForMusic = clamp(rawDayIndex, unlockFromDay, totalDays);
-      const file = `music/day${String(dayForMusic).padStart(2, "0")}.mp3`;
-      audio.src = file;
+      if (u.includes("open.spotify.com/embed/")) return u;
 
-      label.textContent = gateUnlocked ? `Canción del día ${dayForMusic} 🎧` : `Bloqueado hasta el día ${unlockFromDay}.`;
-      playBtn.disabled = !gateUnlocked;
-      pauseBtn.disabled = !gateUnlocked;
+      if (u.includes("open.spotify.com/playlist/")) {
+        return u.replace("open.spotify.com/", "open.spotify.com/embed/");
+      }
 
-      playBtn.addEventListener("click", async () => {
-        try { await audio.play(); }
-        catch (e) { showModal("Autoplay bloqueado", "Toca otra vez Reproducir (los navegadores son celosos con el audio)."); }
-      });
-      pauseBtn.addEventListener("click", () => audio.pause());
+      if (u.includes("open.spotify.com/track/")) {
+        return u.replace("open.spotify.com/", "open.spotify.com/embed/");
+      }
 
-      window.addEventListener("pointerdown", async function once(){
-        window.removeEventListener("pointerdown", once);
-        if (!gateUnlocked) return;
-        try { await audio.play(); } catch(e) {}
-      });
+      if (u.startsWith("spotify:playlist:")) {
+        const id = u.split(":").pop();
+        return `https://open.spotify.com/embed/playlist/${id}`;
+      }
+
+      return "";
+    }
+
+    (()=> {
+      const embed = document.getElementById("spotifyEmbed");
+      const open = document.getElementById("spotifyOpen");
+      const hint = document.getElementById("spotifyHint");
+      if(!embed || !open || !hint) return;
+
+      const url = (CONFIG.spotifyPlaylistUrl || "").trim();
+      const embedUrl = toSpotifyEmbedUrl(url);
+
+      if(!url || !embedUrl){
+        embed.style.display = "none";
+        open.style.display = "none";
+        hint.textContent = "Pega tu link real de playlist en CONFIG.spotifyPlaylistUrl (de open.spotify.com).";
+        return;
+      }
+
+      if(!gateUnlocked){
+        embed.style.display = "none";
+        open.style.opacity = "0.55";
+        open.style.pointerEvents = "none";
+        open.href = url;
+        hint.textContent = `Playlist bloqueada hasta el día ${unlockFromDay}.`;
+        return;
+      }
+
+      embed.src = embedUrl;
+      embed.style.display = "block";
+      open.href = url;
+      open.style.opacity = "1";
+      open.style.pointerEvents = "auto";
+      hint.textContent = "Si no carga en algunos navegadores, prueba abrirla con el botón 🎧.";
     })();
 
     // =========================
@@ -553,6 +679,7 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     // Arranque
     renderDatesLoop();
     startAutoVerticalScroll();
+    renderReels();
 
     // =========================
     // Tulipanes (igual que antes)
