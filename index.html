@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Un mes contigo ✨</title>
+  <style>
+    :root{
+      --bg:#0b0b10; --card:#12121a; --txt:#f2f2f7; --muted:#b6b6c6;
+      --accent:#ff5da2; --accent2:#7c5cff;
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1000px 600px at 20% 10%, rgba(255,93,162,.18), transparent 60%),
+                  radial-gradient(900px 500px at 80% 30%, rgba(124,92,255,.18), transparent 60%),
+                  var(--bg);
+      color:var(--txt);
+    }
+    .wrap{max-width:980px; margin:0 auto; padding:28px 16px 60px}
+    .hero{
+      padding:26px; border-radius:var(--radius);
+      background: linear-gradient(135deg, rgba(255,93,162,.16), rgba(124,92,255,.12));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+    .badge{display:inline-flex; gap:8px; align-items:center; padding:8px 12px;
+      border-radius:999px; background:rgba(255,255,255,.07); color:var(--muted); font-size:14px}
+    h1{margin:14px 0 8px; font-size:38px; line-height:1.1}
+    p{margin:8px 0; color:var(--muted); font-size:16px; line-height:1.6}
+    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; margin-top:16px}
+    @media (max-width: 860px){ .grid{grid-template-columns:1fr} h1{font-size:32px}}
+    .card{
+      background:rgba(18,18,26,.86); border:1px solid rgba(255,255,255,.08);
+      border-radius:var(--radius); padding:18px;
+    }
+    .btn{
+      cursor:pointer; border:none; color:var(--txt);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding:12px 14px; border-radius:14px; font-weight:650; width:100%;
+      transition: transform .08s ease;
+    }
+    .btn:active{transform: scale(.99)}
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .pill{padding:8px 10px; border-radius:999px; background:rgba(255,255,255,.07); color:var(--muted); font-size:13px}
+    .gallery{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px}
+    @media (max-width: 600px){ .gallery{grid-template-columns: repeat(2,1fr)} }
+    .photo{
+      aspect-ratio: 1 / 1; border-radius:16px; overflow:hidden; position:relative;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+    }
+    .photo img{width:100%; height:100%; object-fit:cover; display:block}
+    .footer{margin-top:18px; text-align:center; color:rgba(255,255,255,.45); font-size:13px}
+    .secret{display:none; margin-top:10px}
+    textarea, input{
+      width:100%; border-radius:14px; padding:12px 12px; margin-top:10px;
+      border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); color:var(--txt);
+      outline:none;
+    }
+    .small{font-size:13px; color:rgba(255,255,255,.55)}
+    .divider{height:1px; background:rgba(255,255,255,.08); margin:16px 0}
+    .daygrid{display:grid; grid-template-columns: repeat(5, 1fr); gap:10px}
+    @media (max-width: 700px){ .daygrid{grid-template-columns: repeat(3,1fr)} }
+    .day{
+      background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
+      border-radius:14px; padding:10px; min-height:78px;
+      display:flex; flex-direction:column; justify-content:space-between; gap:8px;
+    }
+    .day strong{font-size:13px; color:rgba(255,255,255,.78)}
+    .day button{
+      border:none; border-radius:12px; padding:8px 10px; cursor:pointer;
+      background:rgba(255,255,255,.08); color:rgba(255,255,255,.9); font-weight:600;
+    }
+    .modal{
+      position:fixed; inset:0; background:rgba(0,0,0,.6);
+      display:none; align-items:center; justify-content:center; padding:16px;
+    }
+    .modal .box{
+      max-width:560px; width:100%; border-radius:18px; padding:18px;
+      background:rgba(18,18,26,.95); border:1px solid rgba(255,255,255,.10);
+    }
+    .close{float:right; cursor:pointer; color:rgba(255,255,255,.65)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="badge">💌 Regalo online · <span id="today"></span></div>
+      <h1>Un mes contigo, <span style="color:var(--accent)">mi amor</span>.</h1>
+      <p>
+        <strong>[TU NOMBRE]</strong> × <strong>[SU NOMBRE]</strong><br/>
+        Aunque estemos lejos, aquí tienes un pedacito de mí, siempre disponible.
+      </p>
+      <div class="row" style="margin-top:10px">
+        <span class="pill">✨ 1 mes</span>
+        <span class="pill">📍 Distancia: [CIUDAD] ↔ [CIUDAD]</span>
+        <span class="pill">🗓️ Nuestro día: [FECHA]</span>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2 style="margin:0 0 8px">Carta</h2>
+          <p id="letter">
+            Hoy cumplimos 1 mes, y aunque suene poquito, ya se siente enorme.<br/>
+            Gracias por elegirme, por quedarte, por hacer que la distancia no sea excusa.<br/><br/>
+            Prometo seguir apareciendo, cuidándonos y construyendo esto contigo.<br/>
+            <span style="color:rgba(255,255,255,.9)">Feliz 1 mes, amor.</span> 💖
+          </p>
+
+          <div class="divider"></div>
+
+          <h3 style="margin:0 0 8px">Abrir cuando me extrañes</h3>
+          <p class="small">Tip: puedes poner una “contraseña” (un apodo) para que solo ella lo abra.</p>
+          <input id="code" placeholder="Escribe el apodo secreto..." />
+          <button class="btn" onclick="openSecret()">Abrir ✨</button>
+          <div id="secret" class="secret card" style="margin-top:12px">
+            <h3 style="margin:0 0 8px">Para ti 💞</h3>
+            <p style="margin:0">
+              Te extraño. Y aun así, me encanta que existas en mi vida.<br/>
+              Cuando nos veamos, la primera cita será: <strong>[TU PLAN AQUÍ]</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="margin:0 0 8px">Galería mini</h2>
+          <p class="small">Cambia las imágenes por links tuyos (Drive/Instagram/lo que sea) o pon fotos locales.</p>
+
+          <div class="gallery" style="margin-top:10px">
+            <div class="photo"><img src="https://images.unsplash.com/photo-1520975693411-27a4a7f1b7c4?auto=format&fit=crop&w=600&q=80" alt="foto1"></div>
+            <div class="photo"><img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=600&q=80" alt="foto2"></div>
+            <div class="photo"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80" alt="foto3"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h2 style="margin:0 0 8px">Playlist</h2>
+          <p class="small">Pon aquí el link de Spotify/YouTube.</p>
+          <input id="playlist" value="https://open.spotify.com/" />
+          <button class="btn" onclick="openPlaylist()">Abrir playlist 🎧</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px">
+      <h2 style="margin:0 0 8px">30 días, 30 mensajes</h2>
+      <p class="small">Dale click a un día para abrir un mensaje. (Puedes editar los 30 en el arreglo del código).</p>
+      <div class="daygrid" id="days"></div>
+    </section>
+
+    <div class="footer">Hecho con cariño y un poquito de HTML ✨</div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="box">
+      <span class="close" onclick="closeModal()">✕</span>
+      <h3 id="modalTitle" style="margin:0 0 8px"></h3>
+      <p id="modalBody" style="margin:0; color:var(--muted)"></p>
+    </div>
+  </div>
+
+  <script>
+    // ====== AJUSTA ESTO ======
+    const SECRET_CODE = "gatita"; // cambialo por su apodo/clave
+    const messages = Array.from({length: 30}, (_, i) => `Mensaje del día ${i+1}: escribe aquí algo bonito 💖`);
+
+    // Ejemplos para que se vea vivo (edita a tu gusto)
+    messages[0]  = "Día 1: Me encanta cómo me haces sentir en paz.";
+    messages[1]  = "Día 2: Hoy pensé en ti cuando vi ______.";
+    messages[2]  = "Día 3: Promesa pequeña: esta semana te mando un audio antes de dormir.";
+    messages[6]  = "Día 7: Mini cita a distancia: película + snack + videollamada.";
+    messages[14] = "Día 15: Una cosa que admiro de ti: ______.";
+    messages[29] = "Día 30: Gracias por este mes. Vamos por muchos más. ❤️";
+
+    // ====== LÓGICA ======
+    document.getElementById("today").textContent = new Date().toLocaleDateString("es-MX", {
+      weekday:"long", year:"numeric", month:"long", day:"numeric"
+    });
+
+    const daysEl = document.getElementById("days");
+    for(let d=1; d<=30; d++){
+      const div = document.createElement("div");
+      div.className = "day";
+      div.innerHTML = `<strong>Día ${d}</strong><button onclick="showDay(${d})">Abrir</button>`;
+      daysEl.appendChild(div);
+    }
+
+    function openSecret(){
+      const code = (document.getElementById("code").value || "").trim().toLowerCase();
+      const secret = document.getElementById("secret");
+      secret.style.display = (code === SECRET_CODE) ? "block" : "none";
+      if(code !== SECRET_CODE){
+        showModal("Ups 🙈", "Esa no es la clave. Pista: el apodo que uso contigo.");
+      }
+    }
+
+    function openPlaylist(){
+      const url = document.getElementById("playlist").value.trim();
+      if(url) window.open(url, "_blank");
+    }
+
+    function showDay(d){
+      showModal(`Día ${d} 💌`, messages[d-1] || "Escribe tu mensaje aquí.");
+    }
+
+    function showModal(title, body){
+      document.getElementById("modalTitle").textContent = title;
+      document.getElementById("modalBody").textContent = body;
+      document.getElementById("modal").style.display = "flex";
+    }
+    function closeModal(){
+      document.getElementById("modal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
