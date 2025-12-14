@@ -195,6 +195,22 @@
         showModal("Ups 🙈", "Esa no es la clave. Pista: el apodo que uso contigo.");
       }
     }
+    <section class="card" style="margin-top:14px">
+  <h2 style="margin:0 0 8px">Dibuja tulipanes 🌷</h2>
+  <p class="small" style="margin-top:0">
+    Haz click (o toca en el cel) para plantar un tulipán. Cada uno sale un poquito distinto.
+  </p>
+
+  <div class="tulip-wrap">
+    <canvas id="tulipCanvas" class="tulip-canvas"></canvas>
+
+    <div class="tulip-actions">
+      <button class="btn" style="max-width:220px" id="tulipClear">Limpiar</button>
+      <button class="btn" style="max-width:220px" id="tulipSave">Guardar PNG</button>
+    </div>
+  </div>
+</section>
+
 
     function openPlaylist(){
       const url = document.getElementById("playlist").value.trim();
@@ -216,21 +232,8 @@
   </script>
 </body>
 
-  <section class="card" style="margin-top:14px">
-  <h2 style="margin:0 0 8px">Dibuja tulipanes 🌷</h2>
-  <p class="small" style="margin-top:0">
-    Haz click (o toca en el cel) para plantar un tulipán. Cada uno sale un poquito distinto.
-  </p>
 
-  <div class="tulip-wrap">
-    <canvas id="tulipCanvas" class="tulip-canvas"></canvas>
-
-    <div class="tulip-actions">
-      <button class="btn" style="max-width:220px" id="tulipClear">Limpiar</button>
-      <button class="btn" style="max-width:220px" id="tulipSave">Guardar PNG</button>
-    </div>
-  </div>
-</section>
 
 </html>
+
 
