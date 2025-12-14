@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Un mes contigo ✨</title>
+  <title>1 mes contigo ✨</title>
+
   <style>
     :root{
       --bg:#0b0b10; --card:#12121a; --txt:#f2f2f7; --muted:#b6b6c6;
-      --accent:#ff5da2; --accent2:#7c5cff;
-      --radius:18px;
+      --accent:#ff5da2; --accent2:#7c5cff; --radius:18px;
     }
     *{box-sizing:border-box}
     body{
@@ -28,6 +28,7 @@
     .badge{display:inline-flex; gap:8px; align-items:center; padding:8px 12px;
       border-radius:999px; background:rgba(255,255,255,.07); color:var(--muted); font-size:14px}
     h1{margin:14px 0 8px; font-size:38px; line-height:1.1}
+    h2{margin:0 0 8px}
     p{margin:8px 0; color:var(--muted); font-size:16px; line-height:1.6}
     .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; margin-top:16px}
     @media (max-width: 860px){ .grid{grid-template-columns:1fr} h1{font-size:32px}}
@@ -39,40 +40,36 @@
       cursor:pointer; border:none; color:var(--txt);
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       padding:12px 14px; border-radius:14px; font-weight:650; width:100%;
-      transition: transform .08s ease;
+      transition: transform .08s ease, opacity .15s ease;
     }
     .btn:active{transform: scale(.99)}
+    .btn:disabled{opacity:.55; cursor:not-allowed}
     .row{display:flex; gap:10px; flex-wrap:wrap}
     .pill{padding:8px 10px; border-radius:999px; background:rgba(255,255,255,.07); color:var(--muted); font-size:13px}
-    .gallery{display:grid; grid-template-columns: repeat(3, 1fr); gap:10px}
-    @media (max-width: 600px){ .gallery{grid-template-columns: repeat(2,1fr)} }
-    .photo{
-      aspect-ratio: 1 / 1; border-radius:16px; overflow:hidden; position:relative;
-      border:1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.04);
-    }
-    .photo img{width:100%; height:100%; object-fit:cover; display:block}
-    .footer{margin-top:18px; text-align:center; color:rgba(255,255,255,.45); font-size:13px}
-    .secret{display:none; margin-top:10px}
-    textarea, input{
+    input{
       width:100%; border-radius:14px; padding:12px 12px; margin-top:10px;
       border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.05); color:var(--txt);
       outline:none;
     }
     .small{font-size:13px; color:rgba(255,255,255,.55)}
     .divider{height:1px; background:rgba(255,255,255,.08); margin:16px 0}
+
     .daygrid{display:grid; grid-template-columns: repeat(5, 1fr); gap:10px}
     @media (max-width: 700px){ .daygrid{grid-template-columns: repeat(3,1fr)} }
     .day{
       background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08);
-      border-radius:14px; padding:10px; min-height:78px;
+      border-radius:14px; padding:10px; min-height:92px;
       display:flex; flex-direction:column; justify-content:space-between; gap:8px;
     }
     .day strong{font-size:13px; color:rgba(255,255,255,.78)}
+    .day .meta{font-size:12px; color:rgba(255,255,255,.55)}
     .day button{
       border:none; border-radius:12px; padding:8px 10px; cursor:pointer;
       background:rgba(255,255,255,.08); color:rgba(255,255,255,.9); font-weight:600;
     }
+    .day.locked{opacity:.55}
+    .day.locked button{cursor:not-allowed}
+
     .modal{
       position:fixed; inset:0; background:rgba(0,0,0,.6);
       display:none; align-items:center; justify-content:center; padding:16px;
@@ -82,77 +79,212 @@
       background:rgba(18,18,26,.95); border:1px solid rgba(255,255,255,.10);
     }
     .close{float:right; cursor:pointer; color:rgba(255,255,255,.65)}
+    .actions{display:flex; gap:10px; flex-wrap:wrap}
+
+    /* ===== Tulipanes ===== */
+    .tulip-wrap{display:flex; flex-direction:column; gap:12px}
+    .tulip-canvas{
+      width:100%;
+      height:420px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      touch-action:none;
+    }
+
+    /* ===== Citas: “pantallita” vertical automática ===== */
+    .dates-viewport{
+      position:relative;
+      height: 360px;            /* se ven ~3 tarjetas */
+      overflow:hidden;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.12);
+    }
+    .dates-viewport::before,
+    .dates-viewport::after{
+      content:"";
+      position:absolute; left:0; right:0;
+      height:38px; pointer-events:none;
+      z-index:2;
+    }
+    .dates-viewport::before{
+      top:0;
+      background: linear-gradient(to bottom, rgba(18,18,26,.95), rgba(18,18,26,0));
+    }
+    .dates-viewport::after{
+      bottom:0;
+      background: linear-gradient(to top, rgba(18,18,26,.95), rgba(18,18,26,0));
+    }
+
+    .dates-list{
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      will-change: transform;
+    }
+
+    .date-card{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:12px 12px;
+      cursor:pointer;
+      transition: transform .08s ease, background .15s ease;
+      user-select:none;
+    }
+    .date-card:hover{ transform: translateY(-1px); background:rgba(255,255,255,.06); }
+
+    .date-top{display:flex; align-items:center; justify-content:space-between; gap:10px}
+    .date-title{font-weight:750; color:rgba(255,255,255,.88); font-size:14px}
+    .date-badge{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background:rgba(255,93,162,.18);
+      border:1px solid rgba(255,93,162,.25);
+      color:rgba(255,255,255,.80);
+      white-space:nowrap;
+    }
+    .date-meta{margin-top:6px; font-size:13px; color:rgba(255,255,255,.65); line-height:1.35}
+    .date-icons{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap}
+    .date-pill{
+      font-size:12px; color:rgba(255,255,255,.68);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      padding:6px 10px; border-radius:999px;
+      user-select:none;
+    }
+
+    /* ✅ Imagen dentro de la cita */
+    .date-img{
+      width:100%;
+      height:140px;
+      border-radius:14px;
+      margin-top:10px;
+      object-fit:cover;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      filter:saturate(1.08) contrast(1.05);
+    }
+
+    .paused-hint{
+      font-size:12px; color:rgba(255,255,255,.45);
+      margin-top:8px;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
+    <div id="lockGate" class="card" style="display:none; margin-bottom:14px">
+      <h2 style="margin:0 0 8px">Aún no se desbloquea 🔒</h2>
+      <p class="small" id="lockText" style="margin:0"></p>
+    </div>
+
     <section class="hero">
       <div class="badge">💌 Regalo online · <span id="today"></span></div>
-      <h1>Un mes contigo, <span style="color:var(--accent)">mi amor</span>.</h1>
+
+      <h1>Un mes contigo, <span style="color:var(--accent)" id="herName">mi amor</span>.</h1>
+
       <p>
-        <strong>[TU NOMBRE]</strong> × <strong>[SU NOMBRE]</strong><br/>
-        Aunque estemos lejos, aquí tienes un pedacito de mí, siempre disponible.
+        <strong id="myName">[TU NOMBRE]</strong> × <strong id="yourName">[SU NOMBRE]</strong><br/>
+        Aunque estemos lejos, aquí tienes un pedacito de mí.
       </p>
+
       <div class="row" style="margin-top:10px">
         <span class="pill">✨ 1 mes</span>
-        <span class="pill">📍 Distancia: [CIUDAD] ↔ [CIUDAD]</span>
-        <span class="pill">🗓️ Nuestro día: [FECHA]</span>
+        <span class="pill">📍 <span id="cities">[CIUDAD] ↔ [CIUDAD]</span></span>
+        <span class="pill">🗓️ Inicio: <span id="startLabel">[FECHA]</span></span>
+        <span class="pill">⏳ Día actual: <span id="rawDay">0</span></span>
       </div>
 
       <div class="grid">
+        <!-- Izquierda -->
         <div class="card">
-          <h2 style="margin:0 0 8px">Carta</h2>
+          <h2>Carta</h2>
           <p id="letter">
-            Hoy cumplimos 1 mes, y aunque suene poquito, ya se siente enorme.<br/>
-            Gracias por elegirme, por quedarte, por hacer que la distancia no sea excusa.<br/><br/>
-            Prometo seguir apareciendo, cuidándonos y construyendo esto contigo.<br/>
-            <span style="color:rgba(255,255,255,.9)">Feliz 1 mes, amor.</span> 💖
+            Estamos cerca de cumplir 1 mes ya como algo más que amigos y quería darte un pequeño detalle, aunque estemos a distancia. Por eso hice esta página: cada día habrá un mensaje para ti y una canción nueva que espero te guste.
+Ya te lo he dicho muchas veces, pero te lo vuelvo a decir: me gustas por cómo eres, por cómo te expresas y por cómo piensas. Me emociona seguir creando recuerdos contigo y poder compartir más momentos a tu lado.
+Mientras llega el día de verte, que esta página sea como un puente: un pedacito de mí contigo todos los días. Y recuerda: si necesitas hablar, aquí voy a estar.<br/>
+            <span style="color:rgba(255, 255, 255, 0.842)">Por mas tiempo creando bonitos recuerdos .</span> 
           </p>
 
           <div class="divider"></div>
 
           <h3 style="margin:0 0 8px">Abrir cuando me extrañes</h3>
-          <p class="small">Tip: puedes poner una “contraseña” (un apodo) para que solo ella lo abra.</p>
+          <p class="small">Esto es romántico, no “seguro” (si la página es pública, el código se puede ver).</p>
           <input id="code" placeholder="Escribe el apodo secreto..." />
-          <button class="btn" onclick="openSecret()">Abrir ✨</button>
-          <div id="secret" class="secret card" style="margin-top:12px">
+          <button class="btn" id="secretBtn" onclick="openSecret()">Abrir ✨</button>
+
+          <div id="secret" style="display:none; margin-top:12px" class="card">
             <h3 style="margin:0 0 8px">Para ti 💞</h3>
             <p style="margin:0">
               Te extraño. Y aun así, me encanta que existas en mi vida.<br/>
-              Cuando nos veamos, la primera cita será: <strong>[TU PLAN AQUÍ]</strong>.
+              Cuando nos veamos, nuestra primera cita será: <strong id="plan">[TU PLAN AQUÍ]</strong>.
             </p>
           </div>
         </div>
 
+        <!-- Derecha -->
         <div class="card">
-          <h2 style="margin:0 0 8px">Galería mini</h2>
-          <p class="small">Cambia las imágenes por links tuyos (Drive/Instagram/lo que sea) o pon fotos locales.</p>
+          <h2>Nuestras citas ✨</h2>
+          <p class="small">
 
-          <div class="gallery" style="margin-top:10px">
-            <div class="photo"><img src="https://images.unsplash.com/photo-1520975693411-27a4a7f1b7c4?auto=format&fit=crop&w=600&q=80" alt="foto1"></div>
-            <div class="photo"><img src="https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=600&q=80" alt="foto2"></div>
-            <div class="photo"><img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=80" alt="foto3"></div>
+          <div class="dates-viewport" id="datesViewport">
+            <div id="datesList" class="dates-list"></div>
+          </div>
+
+          <div class="paused-hint">
+            
           </div>
 
           <div class="divider"></div>
 
-          <h2 style="margin:0 0 8px">Playlist</h2>
-          <p class="small">Pon aquí el link de Spotify/YouTube.</p>
-          <input id="playlist" value="https://open.spotify.com/" />
-          <button class="btn" onclick="openPlaylist()">Abrir playlist 🎧</button>
+          <h2 style="margin:0 0 8px">Canción del día 🎶</h2>
+          <p class="small" style="margin-top:0">
+            Cambia por día. Archivos: <b>music/day15.mp3</b> ... <b>music/day30.mp3</b>
+          </p>
+
+          <audio id="bgMusic" preload="auto" loop></audio>
+
+          <div class="actions" style="margin-top:10px">
+            <button class="btn" style="max-width:220px" id="musicPlay">Reproducir</button>
+            <button class="btn" style="max-width:220px" id="musicPause">Pausar</button>
+          </div>
+
+          <p class="small" id="musicLabel" style="margin-top:10px; opacity:.85"></p>
         </div>
       </div>
     </section>
 
     <section class="card" style="margin-top:14px">
-      <h2 style="margin:0 0 8px">30 días, 30 mensajes</h2>
-      <p class="small">Dale click a un día para abrir un mensaje. (Puedes editar los 30 en el arreglo del código).</p>
+      <h2>Días 15 → 30</h2>
+      <p class="small">Esta parte solo existe desde el día 15 en adelante.</p>
       <div class="daygrid" id="days"></div>
     </section>
 
-    <div class="footer">Hecho con cariño y un poquito de HTML ✨</div>
+    <section class="card" style="margin-top:14px">
+      <h2 style="margin:0 0 8px">Dibuja tulipanes 🌷</h2>
+      <p class="small" style="margin-top:0">
+        Haz click (o toca en el cel) para plantar un tulipán. Cada uno sale un poquito distinto.<br/>
+        No puedo dartelas en persona esta vez, pero aqui estan estas flores en lo que nos vemos.
+      </p>
+
+      <div class="tulip-wrap">
+        <canvas id="tulipCanvas" class="tulip-canvas"></canvas>
+        <div class="actions">
+          <button class="btn" style="max-width:220px" id="tulipClear">Limpiar</button>
+          <button class="btn" style="max-width:220px" id="tulipSave">Guardar PNG</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer" style="margin-top:18px; text-align:center; color:rgba(255,255,255,.45); font-size:13px">
+      Hecho con cariño y un poquito de magia nerd ✨
+    </div>
   </div>
 
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="box">
       <span class="close" onclick="closeModal()">✕</span>
@@ -162,78 +294,468 @@
   </div>
 
   <script>
-    // ====== AJUSTA ESTO ======
-    const SECRET_CODE = "gatita"; // cambialo por su apodo/clave
-    const messages = Array.from({length: 30}, (_, i) => `Mensaje del día ${i+1}: escribe aquí algo bonito 💖`);
+    // =========================
+    // 1) PERSONALIZA AQUÍ 👇
+    // =========================
+    const CONFIG = {
+      myName: "Eduardo",
+      herName: "NombreDeElla",
+      cities: "Monterrey ↔ SuCiudad",
+      startDate: "2025-11-28",
+      unlockFromDay: 17,
+      secretCode: "gatita",
+      plan: "cena + caminar + muchas fotos",
+      totalDays: 30
+    };
 
-    // Ejemplos para que se vea vivo (edita a tu gusto)
-    messages[0]  = "Día 1: Me encanta cómo me haces sentir en paz.";
-    messages[1]  = "Día 2: Hoy pensé en ti cuando vi ______.";
-    messages[2]  = "Día 3: Promesa pequeña: esta semana te mando un audio antes de dormir.";
-    messages[6]  = "Día 7: Mini cita a distancia: película + snack + videollamada.";
-    messages[14] = "Día 15: Una cosa que admiro de ti: ______.";
-    messages[29] = "Día 30: Gracias por este mes. Vamos por muchos más. ❤️";
+    const messages = Array.from({length: CONFIG.totalDays}, (_, i) => `Día ${i+1}: escribe aquí algo bonito 💖`);
+    messages[16] = "Día 17: Hoy empieza este mini ritual: un mensaje y una canción, solo para ti. Gracias por estar aquí. 🌷";
+    messages[17] = "Día 18: Me gustas en lo simple: cómo piensas, cómo sientes y cómo eres, y eso te hace unica";
+    messages[18] = "Día 19: Si hoy fue un día pesado, recuerda esto: no tienes que sentirte sola. Aquí estoy.";
+    messages[19] = "Día 20: Si hoy te faltó motivación, te presto la mía. Tú solo respira, yo te acompaño desde acá";
+    messages[20] = "Día 21: Eres mi pensamiento favorito cuando el día se pone raro.";
+    messages[21] = "Día 22: Me encanta conocerte en detalles: tus gustos, tus manías, lo que te emociona y lo que no toleras.";
+    messages[22] = "Día 23: Eres de esas personas que hacen que el mundo se sienta más suave. Gracias por existir así";
+    messages[23] = "Día 24: Ojalá hoy te pase algo bonito, aunque sea chiquito";
+    messages[24] = "Día 25: Estoy orgulloso de ti, incluso por cosas que nadie ve";
+    messages[25] = "Día 26: Gracias por dejarme acercarme a ti. Me hace feliz conocerte poco a poco.";
+    messages[26] = "Día 27: Eres mi tipo de persona: auténtica, inteligente y con corazón";
+    messages[27] = "Día 28: Hoy te recuerdo algo simple: me importas y mucho";
+    messages[28] = "Día 29: Eres de esas personas que hacen el mundo más bonito sin intentarlo.";
+    messages[29] = "Día 30: Hoy cumplimos un mes, y solo quiero decirte esto: me haces sentir muy bien, y me encanta que seas tú";
+    
 
-    // ====== LÓGICA ======
-    document.getElementById("today").textContent = new Date().toLocaleDateString("es-MX", {
-      weekday:"long", year:"numeric", month:"long", day:"numeric"
-    });
-
-    const daysEl = document.getElementById("days");
-    for(let d=1; d<=30; d++){
-      const div = document.createElement("div");
-      div.className = "day";
-      div.innerHTML = `<strong>Día ${d}</strong><button onclick="showDay(${d})">Abrir</button>`;
-      daysEl.appendChild(div);
-    }
-
-    function openSecret(){
-      const code = (document.getElementById("code").value || "").trim().toLowerCase();
-      const secret = document.getElementById("secret");
-      secret.style.display = (code === SECRET_CODE) ? "block" : "none";
-      if(code !== SECRET_CODE){
-        showModal("Ups 🙈", "Esa no es la clave. Pista: el apodo que uso contigo.");
-      }
-    }
-    <section class="card" style="margin-top:14px">
-  <h2 style="margin:0 0 8px">Dibuja tulipanes 🌷</h2>
-  <p class="small" style="margin-top:0">
-    Haz click (o toca en el cel) para plantar un tulipán. Cada uno sale un poquito distinto.
-  </p>
-
-  <div class="tulip-wrap">
-    <canvas id="tulipCanvas" class="tulip-canvas"></canvas>
-
-    <div class="tulip-actions">
-      <button class="btn" style="max-width:220px" id="tulipClear">Limpiar</button>
-      <button class="btn" style="max-width:220px" id="tulipSave">Guardar PNG</button>
-    </div>
-  </div>
-</section>
-
-
-    function openPlaylist(){
-      const url = document.getElementById("playlist").value.trim();
-      if(url) window.open(url, "_blank");
-    }
-
-    function showDay(d){
-      showModal(`Día ${d} 💌`, messages[d-1] || "Escribe tu mensaje aquí.");
-    }
+    const msPerDay = 24*60*60*1000;
+    const stripTime = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const clamp = (x,a,b) => Math.max(a, Math.min(b,x));
 
     function showModal(title, body){
       document.getElementById("modalTitle").textContent = title;
       document.getElementById("modalBody").textContent = body;
       document.getElementById("modal").style.display = "flex";
     }
-    function closeModal(){
-      document.getElementById("modal").style.display = "none";
+    function closeModal(){ document.getElementById("modal").style.display = "none"; }
+
+    // =========================
+    // Citas con imágenes ✅
+    // =========================
+    const dates = [
+      { n:1, title:"Yamato + Museo La Milarca", meta:"Comida rica + cultura (plan perfecto).",
+        pills:["🍱 Yamato","🏛️ La Milarca","✨ Primera cita"],
+        body:"Primera cita: Yamato + La Milarca. Un plan con vibra bonita: comer rico y luego pasear/mirar cosas increíbles juntos.",
+        img:"img/cita1.jpg" },
+
+      { n:2, title:"Princesa Mononoke + Matcha Garden", meta:"Anime + matcha = peligro de enamoramiento.",
+        pills:["🎬 Mononoke","🍵 Matcha Garden","🌿 Vibes"],
+        body:"Vimos La Princesa Mononoke y luego fuimos a Matcha Garden. El combo perfecto para una tarde que se queda guardada.",
+        img:"img/cita2.jpg" },
+
+      { n:3, title:"Hielo + 31 Minutos + Carl’s Jr.", meta:"Caídas con estilo + museo + hamburguesa final.",
+        pills:["⛸️ Hielo","🧸 31 Minutos","🍔 Carl’s Jr."],
+        body:"Patinar en hielo, el museo de 31 Minutos y terminar en Carl’s Jr. Cita caótica y feliz (las mejores).",
+        img:"img/cita3.jpg" },
+
+      { n:4, title:"Bolos + Pizza", meta:"Competencia sana (según) + pizza (seguro).",
+        pills:["🎳 Bolos","🍕 Pizza","😄 Risas"],
+        body:"Fuimos a los bolos y luego pizza. Plan clásico que no falla, y contigo menos.",
+        img:"img/cita4.jpg" },
+
+      { n:5, title:"Picnic + LEGO del robotcito", meta:"Cielo, snack y construir algo juntos.",
+        pills:["🧺 Picnic","🧱 LEGO","🤖 Robotcito"],
+        body:"Salimos de picnic y armamos el LEGO del robotcito. De esas tardes que se sienten como hogar.",
+        img:"img/cita5.jpg" },
+
+      { n:6, title:"Feria del Libro de Monterrey", meta:"Libros, caminar y encontrarnos en pasillos.",
+        pills:["📚 Feria del libro","✨ Plan tranqui"],
+        body:"Fuimos a la Feria del Libro de Monterrey. Paseo largo, plática rica, y el sentimiento de 'me gusta estar aquí contigo'.",
+        img:"img/cita6.jpg" },
+
+      { n:7, title:"Incredible Pizza (aquí nos hicimos novios)", meta:"El día que pasó lo importante 💘",
+        pills:["🍕 Incredible Pizza","💘 Novios","🎮 Diversión"],
+        body:"Fuimos a Incredible Pizza… y aquí nos hicimos novios. Fin del comunicado oficial: te elegí. 💖",
+        badge:"💘 Nos hicimos novios",
+        img:"img/cita7.jpg" }
+    ];
+
+    function dateCardHTML(d){
+      return `
+        <div class="date-card" data-n="${d.n}">
+          <div class="date-top">
+            <div class="date-title">Cita ${d.n}: ${d.title}</div>
+            ${d.badge ? `<div class="date-badge">${d.badge}</div>` : `<div class="date-badge">✨ Cita ${d.n}</div>`}
+          </div>
+
+          <div class="date-meta">${d.meta}</div>
+
+          ${d.img ? `<img class="date-img" src="${d.img}" alt="Foto de la cita ${d.n}" loading="lazy">` : ""}
+
+          <div class="date-icons">
+            ${d.pills.map(p => `<span class="date-pill">${p}</span>`).join("")}
+          </div>
+        </div>
+      `;
     }
+
+    function renderDatesLoop(){
+      const list = document.getElementById("datesList");
+      if(!list) return;
+
+      list.innerHTML = dates.map(dateCardHTML).join("") + dates.map(dateCardHTML).join("");
+
+      list.querySelectorAll(".date-card").forEach(card => {
+        card.addEventListener("click", () => {
+          const n = Number(card.getAttribute("data-n"));
+          const d = dates.find(x => x.n === n);
+          if(d) showModal(`Cita ${d.n} ✨`, d.body);
+        });
+      });
+    }
+
+    // =========================
+    // Lógica de días + gate
+    // =========================
+    const start = new Date(CONFIG.startDate + "T00:00:00");
+    const today = new Date();
+
+    document.getElementById("today").textContent = today.toLocaleDateString("es-MX", {
+      weekday:"long", year:"numeric", month:"long", day:"numeric"
+    });
+
+    document.getElementById("myName").textContent = CONFIG.myName;
+    document.getElementById("yourName").textContent = CONFIG.herName;
+    document.getElementById("herName").textContent = CONFIG.herName;
+    document.getElementById("cities").textContent = CONFIG.cities;
+    document.getElementById("startLabel").textContent = CONFIG.startDate;
+    document.getElementById("plan").textContent = CONFIG.plan;
+
+    const rawDayIndex = Math.floor((stripTime(today) - stripTime(start)) / msPerDay) + 1;
+    document.getElementById("rawDay").textContent = Math.max(rawDayIndex, 0);
+
+    const unlockFromDay = CONFIG.unlockFromDay || 1;
+    const totalDays = CONFIG.totalDays || 30;
+    const gateUnlocked = rawDayIndex >= unlockFromDay;
+
+    const lockGate = document.getElementById("lockGate");
+    const lockText = document.getElementById("lockText");
+
+    if (!gateUnlocked) {
+      const unlockDate = new Date(start.getTime() + (unlockFromDay - 1)*msPerDay);
+      const daysLeft = Math.ceil((stripTime(unlockDate) - stripTime(today)) / msPerDay);
+      lockGate.style.display = "block";
+      lockText.textContent = `Se desbloquea el ${unlockDate.toLocaleDateString("es-MX")} (faltan ${daysLeft} día(s)).`;
+    } else {
+      lockGate.style.display = "none";
+    }
+
+    function openSecret(){
+      if (!gateUnlocked) {
+        showModal("Todavía no 🙈", "Esto se desbloquea a partir del día 15.");
+        return;
+      }
+      const code = (document.getElementById("code").value || "").trim().toLowerCase();
+      const secret = document.getElementById("secret");
+      secret.style.display = (code === CONFIG.secretCode.toLowerCase()) ? "block" : "none";
+      if(code !== CONFIG.secretCode.toLowerCase()){
+        showModal("Ups 🙈", "Esa no es la clave. Pista: el apodo que uso contigo.");
+      }
+    }
+
+    // =========================
+    // Días 15..30
+    // =========================
+    const daysEl = document.getElementById("days");
+    daysEl.innerHTML = "";
+
+    for (let realDay = unlockFromDay; realDay <= totalDays; realDay++) {
+      const unlockDate = new Date(start.getTime() + (realDay - 1)*msPerDay);
+      const isUnlocked = stripTime(today) >= stripTime(unlockDate);
+
+      const div = document.createElement("div");
+      div.className = "day" + (isUnlocked ? "" : " locked");
+      div.innerHTML = `
+        <strong>Día ${realDay}</strong>
+        <div class="meta">${unlockDate.toLocaleDateString("es-MX")}</div>
+        <button ${isUnlocked ? "" : "disabled"} onclick="showDay(${realDay})">
+          ${isUnlocked ? "Abrir" : "Bloqueado"}
+        </button>
+      `;
+      daysEl.appendChild(div);
+    }
+
+    function showDay(realDay){
+      const idx = realDay - 1;
+      showModal(`Día ${realDay} 💌`, messages[idx] || "Escribe tu mensaje aquí.");
+    }
+
+    // =========================
+    // Música por día
+    // =========================
+    (() => {
+      const audio = document.getElementById("bgMusic");
+      const playBtn = document.getElementById("musicPlay");
+      const pauseBtn = document.getElementById("musicPause");
+      const label = document.getElementById("musicLabel");
+      if (!audio || !playBtn || !pauseBtn) return;
+
+      const dayForMusic = clamp(rawDayIndex, unlockFromDay, totalDays);
+      const file = `music/day${String(dayForMusic).padStart(2, "0")}.mp3`;
+      audio.src = file;
+
+      label.textContent = gateUnlocked ? `Canción del día ${dayForMusic} 🎧` : `Bloqueado hasta el día ${unlockFromDay}.`;
+      playBtn.disabled = !gateUnlocked;
+      pauseBtn.disabled = !gateUnlocked;
+
+      playBtn.addEventListener("click", async () => {
+        try { await audio.play(); }
+        catch (e) { showModal("Autoplay bloqueado", "Toca otra vez Reproducir (los navegadores son celosos con el audio)."); }
+      });
+      pauseBtn.addEventListener("click", () => audio.pause());
+
+      window.addEventListener("pointerdown", async function once(){
+        window.removeEventListener("pointerdown", once);
+        if (!gateUnlocked) return;
+        try { await audio.play(); } catch(e) {}
+      });
+    })();
+
+    // =========================
+    // Auto-scroll vertical infinito (3 visibles)
+    // =========================
+    function startAutoVerticalScroll(){
+      const viewport = document.getElementById("datesViewport");
+      const list = document.getElementById("datesList");
+      if(!viewport || !list) return;
+
+      let paused = false;
+      viewport.addEventListener("mouseenter", () => paused = true);
+      viewport.addEventListener("mouseleave", () => paused = false);
+      viewport.addEventListener("touchstart", () => paused = true, {passive:true});
+      viewport.addEventListener("touchend", () => paused = false, {passive:true});
+
+      requestAnimationFrame(() => {
+        const firstSetHeight = list.scrollHeight / 2;
+        let y = 0;
+        const speedPxPerFrame = 0.6;
+
+        function tick(){
+          if(!paused){
+            y += speedPxPerFrame;
+            if (y >= firstSetHeight) y -= firstSetHeight;
+            viewport.scrollTop = y;
+          }
+          requestAnimationFrame(tick);
+        }
+        viewport.scrollTop = 0;
+        tick();
+      });
+    }
+
+    // Arranque
+    renderDatesLoop();
+    startAutoVerticalScroll();
+
+    // =========================
+    // Tulipanes (igual que antes)
+    // =========================
+    (() => {
+      const canvas = document.getElementById("tulipCanvas");
+      if (!canvas) return;
+
+      const ctx = canvas.getContext("2d");
+      const clearBtn = document.getElementById("tulipClear");
+      const saveBtn  = document.getElementById("tulipSave");
+
+      function rand(a,b){ return a + Math.random()*(b-a); }
+      function hsl(h, s, l, a=1){ return `hsla(${h} ${s}% ${l}% / ${a})`; }
+      function clamp2(x,a,b){ return Math.max(a, Math.min(b,x)); }
+
+      function resizeCanvas(){
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.getBoundingClientRect();
+        canvas.width  = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        drawBackground();
+      }
+
+      function drawBackground(){
+        const w = canvas.getBoundingClientRect().width;
+        const h = canvas.getBoundingClientRect().height;
+
+        ctx.clearRect(0,0,w,h);
+
+        ctx.fillStyle = "rgba(255,255,255,0.03)";
+        ctx.fillRect(0, h*0.72, w, h*0.28);
+
+        for(let i=0;i<18;i++){
+          const x = Math.random()*w;
+          const y = Math.random()*h;
+          const r = 1 + Math.random()*2.5;
+          ctx.beginPath();
+          ctx.fillStyle = "rgba(255,255,255,0.08)";
+          ctx.arc(x,y,r,0,Math.PI*2);
+          ctx.fill();
+        }
+      }
+
+      function drawLeaf(ctx, x, y, len, w, angleRad, colorFill, colorStroke){
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angleRad);
+
+        ctx.fillStyle = colorFill;
+        ctx.strokeStyle = colorStroke;
+        ctx.lineWidth = 1.2;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(w*0.9, -len*0.25, 0, -len);
+        ctx.quadraticCurveTo(-w*0.9, -len*0.25, 0, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(255,255,255,0.12)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.quadraticCurveTo(0, -len*0.45, 0, -len);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+
+      function drawTulipBloom(ctx, cx, cy, w, h, hue){
+        const back = hsl(hue, 85, 52, 0.95);
+        const mid  = hsl(hue, 90, 58, 0.95);
+        const front= hsl(hue, 95, 64, 0.95);
+
+        ctx.fillStyle = "rgba(0,0,0,0.18)";
+        ctx.beginPath();
+        ctx.ellipse(cx+3, cy+8, w*0.95, h*0.65, 0, 0, Math.PI*2);
+        ctx.fill();
+
+        function petal(offsetX, tipLift, color, zStroke){
+          const baseY = cy + h*0.40;
+          const tipX  = cx + offsetX;
+          const tipY  = cy - h*0.55 - tipLift;
+
+          const leftX = cx + offsetX - w*0.55;
+          const rightX= cx + offsetX + w*0.55;
+
+          const grad = ctx.createLinearGradient(cx, cy-h, cx, cy+h);
+          grad.addColorStop(0, hsl(hue, 95, 72, 0.95));
+          grad.addColorStop(1, color);
+
+          ctx.fillStyle = grad;
+          ctx.strokeStyle = zStroke;
+          ctx.lineWidth = 1;
+
+          ctx.beginPath();
+          ctx.moveTo(cx + offsetX, baseY);
+          ctx.bezierCurveTo(leftX, cy + h*0.15, leftX*0.98, cy - h*0.35, tipX, tipY);
+          ctx.bezierCurveTo(rightX*1.02, cy - h*0.35, rightX, cy + h*0.15, cx + offsetX, baseY);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        petal(-w*0.30, rand(0,6), back, "rgba(255,255,255,0.10)");
+        petal( w*0.30, rand(0,6), back, "rgba(255,255,255,0.10)");
+        petal(0, rand(2,10), mid, "rgba(255,255,255,0.14)");
+        petal(-w*0.14, rand(4,12), front, "rgba(255,255,255,0.18)");
+        petal( w*0.14, rand(4,12), front, "rgba(255,255,255,0.18)");
+
+        ctx.strokeStyle = "rgba(255,255,255,0.10)";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cx - w*0.85, cy - h*0.05);
+        ctx.quadraticCurveTo(cx, cy + h*0.25, cx + w*0.85, cy - h*0.05);
+        ctx.stroke();
+
+        ctx.fillStyle = "rgba(255,255,255,0.08)";
+        ctx.beginPath();
+        ctx.ellipse(cx - w*0.18, cy - h*0.10, w*0.22, h*0.32, -0.35, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      function drawTulip(x, y){
+        if (!gateUnlocked) {
+          showModal("Bloqueado 🔒", "Los tulipanes se desbloquean a partir del día 15.");
+          return;
+        }
+
+        const w = canvas.getBoundingClientRect().width;
+        const h = canvas.getBoundingClientRect().height;
+
+        const baseY = clamp2(y, h*0.40, h*0.95);
+        const stemLen = rand(150, 270);
+        const topY = clamp2(baseY - stemLen, 55, h*0.82);
+
+        const sway = rand(-40, 40);
+        const midX = x + sway*0.45;
+        const topX = x + sway;
+
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "rgba(70, 210, 135, 0.75)";
+        ctx.lineWidth = rand(4.0, 5.2);
+        ctx.beginPath();
+        ctx.moveTo(x, baseY);
+        ctx.quadraticCurveTo(midX, (baseY+topY)/2, topX, topY);
+        ctx.stroke();
+
+        ctx.strokeStyle = "rgba(120, 255, 190, 0.25)";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(x-0.6, baseY);
+        ctx.quadraticCurveTo(midX-0.6, (baseY+topY)/2, topX-0.6, topY);
+        ctx.stroke();
+
+        const leafFill = "rgba(60, 190, 110, 0.28)";
+        const leafStroke = "rgba(110, 240, 160, 0.38)";
+        const leaf1Y = baseY - rand(40, 110);
+        const leaf2Y = baseY - rand(70, 150);
+
+        drawLeaf(ctx, x + rand(-10, 12), leaf1Y, rand(120, 190), rand(18, 28), rand(-0.55, -0.15), leafFill, leafStroke);
+        if (Math.random() > 0.25){
+          drawLeaf(ctx, x + rand(-12, 10), leaf2Y, rand(110, 170), rand(18, 30), rand(0.15, 0.55), leafFill, leafStroke);
+        }
+
+        const bloomW = rand(34, 52);
+        const bloomH = rand(44, 68);
+        const hues = [350, 0, 12, 22, 48];
+        const hue = hues[Math.floor(Math.random()*hues.length)];
+
+        drawTulipBloom(ctx, topX, topY, bloomW, bloomH, hue);
+      }
+
+      function getPos(evt){
+        const rect = canvas.getBoundingClientRect();
+        const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+        const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+      }
+
+      function plant(evt){
+        evt.preventDefault();
+        const p = getPos(evt);
+        drawTulip(p.x, p.y);
+      }
+
+      canvas.addEventListener("pointerdown", plant);
+      canvas.addEventListener("touchstart", plant, {passive:false});
+
+      clearBtn?.addEventListener("click", () => drawBackground());
+      saveBtn?.addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.download = "tulipanes.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      })
+
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+    })();
   </script>
 </body>
-
-
-
 </html>
-
-
