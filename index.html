@@ -116,7 +116,6 @@
       bottom:0;
       background: linear-gradient(to top, rgba(18,18,26,.95), rgba(18,18,26,0));
     }
-
     .dates-list{
       padding:10px;
       display:flex;
@@ -124,7 +123,6 @@
       gap:12px;
       will-change: transform;
     }
-
     .date-card{
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
@@ -164,11 +162,6 @@
       border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.04);
       filter:saturate(1.08) contrast(1.05);
-    }
-
-    .paused-hint{
-      font-size:12px; color:rgba(255,255,255,.45);
-      margin-top:8px;
     }
 
     /* ===== REELS ===== */
@@ -224,6 +217,69 @@
       overflow:hidden;
       background:rgba(255,255,255,.04);
     }
+
+    /* ===== LUNA (nuevo) ===== */
+    .moon-card{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:12px;
+    }
+    .moon-title{
+      margin:0 0 8px;
+      font-size:18px;
+      font-weight:800;
+      color:rgba(255,255,255,.92);
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .moon-layout{
+      display:grid;
+      grid-template-columns: 1fr 140px;
+      gap:12px;
+      align-items:center;
+    }
+    @media (max-width: 420px){
+      .moon-layout{ grid-template-columns: 1fr; }
+    }
+    .moon-phase{
+      font-weight:800;
+      color:rgba(255,255,255,.92);
+      font-size:18px;
+      line-height:1.2;
+      margin-bottom:4px;
+    }
+    .moon-date{
+      font-size:13px;
+      color:rgba(255,255,255,.60);
+      margin-bottom:10px;
+    }
+    .moon-text{
+      font-size:14px;
+      color:rgba(255,255,255,.68);
+      line-height:1.45;
+      margin:0;
+    }
+    .moon-img{
+      width:140px;
+      height:140px;
+      border-radius:999px;
+      object-fit:cover;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.04);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      display:block;
+    }
+    .moon-fallback{
+      width:140px;
+      height:140px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.22), rgba(255,255,255,.08) 50%, rgba(0,0,0,.2) 100%);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      display:none;
+    }
   </style>
 </head>
 
@@ -257,8 +313,8 @@
           <h2>Carta</h2>
           <p id="letter">
             Estamos cerca de cumplir 1 mes ya como algo más que amigos y quería darte un pequeño detalle, aunque estemos a distancia. Por eso hice esta página: cada día habrá un mensaje para ti y una canción nueva que espero te guste.
-Ya te lo he dicho muchas veces, pero te lo vuelvo a decir: me gustas por cómo eres, por cómo te expresas y por cómo piensas. Me emociona seguir creando recuerdos contigo y poder compartir más momentos a tu lado.
-Mientras llega el día de verte, que esta página sea como un puente: un pedacito de mí contigo todos los días. Y recuerda: si necesitas hablar, aquí voy a estar.<br/>
+            Ya te lo he dicho muchas veces, pero te lo vuelvo a decir: me gustas por cómo eres, por cómo te expresas y por cómo piensas. Me emociona seguir creando recuerdos contigo y poder compartir más momentos a tu lado.
+            Mientras llega el día de verte, que esta página sea como un puente: un pedacito de mí contigo todos los días. Y recuerda: si necesitas hablar, aquí voy a estar.<br/>
             <span style="color:rgba(255, 255, 255, 0.842)">Por mas tiempo creando bonitos recuerdos .</span>
           </p>
 
@@ -274,7 +330,6 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
         <!-- Derecha -->
         <div class="card">
           <h2>Nuestras citas ✨</h2>
-          <p class="small">
 
           <div class="dates-viewport" id="datesViewport">
             <div id="datesList" class="dates-list"></div>
@@ -282,7 +337,7 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
 
           <div class="paused-hint"></div>
 
-          <!-- ✅ Playlist de Spotify (embed + botón) -->
+          <!-- ✅ Playlist de Spotify -->
           <div class="divider"></div>
           <h3 style="margin:0 0 8px">Playlist en Spotify 💚</h3>
           <p class="small" style="margin-top:0">Para cuando quieras escuchar nuestras canciones en Spotify.</p>
@@ -300,6 +355,28 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
           </div>
 
           <p class="small" id="spotifyHint" style="margin-top:10px; opacity:.85"></p>
+
+          <!-- 🌙 NUEVO: La luna cuando se conocieron -->
+          <div class="divider"></div>
+          <div class="moon-card" id="moonCard">
+            <div class="moon-title">La luna cuando nos conocimos 🌙</div>
+
+            <div class="moon-layout">
+              <div>
+                <div class="moon-phase" id="moonPhase">La luna ese día: —</div>
+                <div class="moon-date" id="moonDate">—</div>
+                <p class="moon-text" id="moonNote">
+                  Tal vez no la miramos ese día, pero estaba ahí… igual que esto que empezó entre nosotros.
+                </p>
+              </div>
+
+              <div>
+                <img id="moonImg" class="moon-img" src="" alt="La luna ese día" loading="lazy">
+                <div id="moonFallback" class="moon-fallback" aria-hidden="true"></div>
+              </div>
+            </div>
+          </div>
+          <!-- /Luna -->
         </div>
       </div>
     </section>
@@ -353,7 +430,15 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
       secretCode: "x",
       plan: "cena + caminar + muchas fotos",
       totalDays: 30,
-      spotifyPlaylistUrl: "https://open.spotify.com/playlist/1fitpxZ8XcjZIXAjIGuFPA?si=Ri-9lx-eT5Cbl8VJoru0ng"
+      spotifyPlaylistUrl: "https://open.spotify.com/playlist/1fitpxZ8XcjZIXAjIGuFPA?si=Ri-9lx-eT5Cbl8VJoru0ng",
+
+      // 🌙 LUNA (pon la foto aquí)
+      moon: {
+        dateLabel: "28/11/2025",
+        phaseName: "Cuarto creciente",
+        img: "img/luna_conocimos.png", // <-- GUARDA TU FOTO ASÍ
+        note: "Tal vez no la miramos ese día, pero estaba ahí… igual que esto que empezó entre nosotros."
+      }
     };
 
     const messages = Array.from({length: CONFIG.totalDays}, (_, i) => `Día ${i+1}: escribe aquí algo bonito 💖`);
@@ -559,7 +644,7 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     }
 
     // =========================
-    // Días 15..30
+    // Días 17..30
     // =========================
     const daysEl = document.getElementById("days");
     daysEl.innerHTML = "";
@@ -645,12 +730,35 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     })();
 
     // =========================
+    // 🌙 LUNA (con foto)
+    // =========================
+    (() => {
+      const phaseEl = document.getElementById("moonPhase");
+      const dateEl  = document.getElementById("moonDate");
+      const noteEl  = document.getElementById("moonNote");
+      const imgEl   = document.getElementById("moonImg");
+      const fbEl    = document.getElementById("moonFallback");
+
+      if(!phaseEl || !dateEl || !noteEl || !imgEl || !fbEl) return;
+
+      const m = CONFIG.moon || {};
+      phaseEl.textContent = `La luna ese día: ${m.phaseName || "—"}`;
+      dateEl.textContent = `Así se veía la luna el ${m.dateLabel || "—"}`;
+      noteEl.textContent = m.note || noteEl.textContent;
+
+      imgEl.src = m.img || "";
+      imgEl.onerror = () => {
+        imgEl.style.display = "none";
+        fbEl.style.display = "block";
+      };
+    })();
+
+    // =========================
     // Auto-scroll vertical infinito (3 visibles)
     // =========================
     function startAutoVerticalScroll(){
       const viewport = document.getElementById("datesViewport");
-      const list = document.getElementById("datesList");
-      if(!viewport || !list) return;
+      if(!viewport) return;
 
       let paused = false;
       viewport.addEventListener("mouseenter", () => paused = true);
@@ -659,6 +767,8 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
       viewport.addEventListener("touchend", () => paused = false, {passive:true});
 
       requestAnimationFrame(() => {
+        const list = document.getElementById("datesList");
+        if(!list) return;
         const firstSetHeight = list.scrollHeight / 2;
         let y = 0;
         const speedPxPerFrame = 0.6;
@@ -682,7 +792,7 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
     renderReels();
 
     // =========================
-    // Tulipanes (igual que antes)
+    // Tulipanes
     // =========================
     (() => {
       const canvas = document.getElementById("tulipCanvas");
@@ -886,5 +996,3 @@ Mientras llega el día de verte, que esta página sea como un puente: un pedacit
   </script>
 </body>
 </html>
-
-
