@@ -17,8 +17,22 @@
                   radial-gradient(900px 500px at 80% 30%, rgba(124,92,255,.18), transparent 60%),
                   var(--bg);
       color:var(--txt);
+      overflow-x:hidden;
     }
-    .wrap{max-width:980px; margin:0 auto; padding:28px 16px 60px}
+
+    /* ===== Fondo corazón partículas (NUEVO) ===== */
+    #heartCanvas{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      z-index:0;
+      pointer-events:none;
+      opacity:.55; /* súbelo a .8 si lo quieres más fuerte */
+    }
+    /* Asegura que tu contenido quede arriba del canvas */
+    .wrap{max-width:980px; margin:0 auto; padding:28px 16px 60px; position:relative; z-index:1}
+
     .hero{
       padding:26px; border-radius:var(--radius);
       background: linear-gradient(135deg, rgba(255,93,162,.16), rgba(124,92,255,.12));
@@ -35,6 +49,7 @@
     .card{
       background:rgba(18,18,26,.86); border:1px solid rgba(255,255,255,.08);
       border-radius:var(--radius); padding:18px;
+      position:relative;
     }
     .btn{
       cursor:pointer; border:none; color:var(--txt);
@@ -73,6 +88,7 @@
     .modal{
       position:fixed; inset:0; background:rgba(0,0,0,.6);
       display:none; align-items:center; justify-content:center; padding:16px;
+      z-index:9999;
     }
     .modal .box{
       max-width:560px; width:100%; border-radius:18px; padding:18px;
@@ -116,6 +132,7 @@
       bottom:0;
       background: linear-gradient(to top, rgba(18,18,26,.95), rgba(18,18,26,0));
     }
+
     .dates-list{
       padding:10px;
       display:flex;
@@ -123,6 +140,7 @@
       gap:12px;
       will-change: transform;
     }
+
     .date-card{
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
@@ -218,7 +236,7 @@
       background:rgba(255,255,255,.04);
     }
 
-    /* ===== LUNA (nuevo) ===== */
+    /* ===== LUNA ===== */
     .moon-card{
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.08);
@@ -284,6 +302,9 @@
 </head>
 
 <body>
+  <!-- Fondo corazón (NUEVO) -->
+  <canvas id="heartCanvas" aria-hidden="true"></canvas>
+
   <div class="wrap">
     <div id="lockGate" class="card" style="display:none; margin-bottom:14px">
       <h2 style="margin:0 0 8px">Aún no se desbloquea 🔒</h2>
@@ -356,7 +377,7 @@
 
           <p class="small" id="spotifyHint" style="margin-top:10px; opacity:.85"></p>
 
-          <!-- 🌙 NUEVO: La luna cuando se conocieron -->
+          <!-- 🌙 La luna cuando se conocieron -->
           <div class="divider"></div>
           <div class="moon-card" id="moonCard">
             <div class="moon-title">La luna cuando nos conocimos 🌙</div>
@@ -436,7 +457,7 @@
       moon: {
         dateLabel: "28/11/2025",
         phaseName: "Cuarto creciente",
-        img: "img/luna_conocimos.png", // <-- GUARDA TU FOTO ASÍ
+        img: "img/luna_conocimos.png",
         note: "Tal vez no la miramos ese día, pero estaba ahí… igual que esto que empezó entre nosotros."
       }
     };
@@ -992,6 +1013,120 @@
 
       window.addEventListener("resize", resizeCanvas);
       resizeCanvas();
+    })();
+
+    // =========================
+    // 💖 Corazón de partículas (NUEVO)
+    // =========================
+    (() => {
+      const canvas = document.getElementById("heartCanvas");
+      if(!canvas) return;
+      const ctx = canvas.getContext("2d", { alpha:true });
+
+      const SETTINGS = {
+        particles: 720,   // si se traba en cel: 520
+        speed: 0.012,
+        drift: 0.55,
+        size: [1.0, 2.5],
+        glow: 12,
+        opacity: 0.75
+      };
+
+      let W=0, H=0, DPR=1;
+      let pts=[];
+      let t=0;
+      let running = true;
+
+      const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+      const rand = (a,b)=>a+Math.random()*(b-a);
+
+      function resize(){
+        DPR = clamp(window.devicePixelRatio || 1, 1, 2);
+        W = window.innerWidth;
+        H = window.innerHeight;
+        canvas.width  = Math.floor(W * DPR);
+        canvas.height = Math.floor(H * DPR);
+        canvas.style.width = W + "px";
+        canvas.style.height = H + "px";
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+      }
+
+      function heartPoint(a){
+        const x = 16 * Math.pow(Math.sin(a), 3);
+        const y = 13*Math.cos(a) - 5*Math.cos(2*a) - 2*Math.cos(3*a) - Math.cos(4*a);
+        return { x, y };
+      }
+
+      function init(){
+        pts = [];
+        for(let i=0;i<SETTINGS.particles;i++){
+          const a = (i/SETTINGS.particles) * Math.PI*2;
+          const p = heartPoint(a);
+          pts.push({
+            tx:p.x, ty:p.y,
+            x:W/2 + rand(-60,60),
+            y:H/2 + rand(-60,60),
+            phase: rand(0, Math.PI*2),
+            r: rand(SETTINGS.size[0], SETTINGS.size[1]),
+            hue: rand(330, 360),
+            sat: rand(80, 95),
+            lum: rand(58, 70),
+            a: rand(0.50, SETTINGS.opacity)
+          });
+        }
+      }
+
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+
+        const beat = 1 + 0.06*Math.sin(t*2.6) + 0.02*Math.sin(t*5.2);
+        const scale = Math.min(W, H) / 38;
+        const cx = W/2;
+        const cy = H/2 - 10;
+
+        for(const p of pts){
+          const tx = cx + p.tx * scale * beat;
+          const ty = cy - p.ty * scale * beat;
+
+          const dx = Math.cos(p.phase + t*1.4) * SETTINGS.drift * 18;
+          const dy = Math.sin(p.phase + t*1.1) * SETTINGS.drift * 18;
+
+          p.x += (tx + dx - p.x) * (SETTINGS.speed * 3.0);
+          p.y += (ty + dy - p.y) * (SETTINGS.speed * 3.0);
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+
+          ctx.shadowBlur = SETTINGS.glow;
+          ctx.shadowColor = `hsla(${p.hue} ${p.sat}% ${p.lum}% / ${p.a})`;
+          ctx.fillStyle = `hsla(${p.hue} ${p.sat}% ${p.lum}% / ${p.a})`;
+          ctx.fill();
+        }
+
+        ctx.shadowBlur = 0;
+        ctx.shadowColor = "transparent";
+      }
+
+      function tick(){
+        if(!running) return;
+        t += 0.016;
+        draw();
+        requestAnimationFrame(tick);
+      }
+
+      document.addEventListener("visibilitychange", () => {
+        running = !document.hidden;
+        if(running) requestAnimationFrame(tick);
+      });
+
+      window.addEventListener("resize", () => {
+        resize();
+        init();
+      });
+
+      resize();
+      init();
+      requestAnimationFrame(tick);
     })();
   </script>
 </body>
